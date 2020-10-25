@@ -17,8 +17,7 @@ void setup() {
   digitalWrite(interrupt_pin, HIGH);
   Serial.begin(9600);
   delay(3000);
-  digitalWrite(led, LOW);
-  
+  digitalWrite(led, LOW); 
   attachInterrupt(digitalPinToInterrupt(interrupt_pin),detection,RISING);
 }
 
@@ -100,5 +99,4 @@ void flicker(){
 void detection(){
   Serial.println("Gotcha!");
   state = HIGH; 
-
 }

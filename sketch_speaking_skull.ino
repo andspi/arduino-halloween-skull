@@ -1,4 +1,6 @@
-// Partially based on https://makersportal.com/blog/2019/5/27/arduino-interrupts-with-pir-motion-detector
+// Based on https://makersportal.com/blog/2019/5/27/arduino-interrupts-with-pir-motion-detector
+
+#include <LowPower.h>
 
 volatile byte state = LOW;
 const int interrupt_pin = 2;
@@ -8,70 +10,34 @@ const int led = 6;
 const int play = 12;
 int lum = 1;
 int brightness = 81;
-int treshold = 240;    // Level of light below which the eyes will trigger: 20 is a good default
-int dur = 2;  // Duration of flicker
+int treshold = 50;    // Level of light below which the eyes will trigger: 20 is quite dark.
 
 void setup() {
   pinMode(led, OUTPUT);
+  digitalWrite(led,HIGH);
   pinMode(play, OUTPUT);
   digitalWrite(interrupt_pin, HIGH);
-  Serial.begin(9600);
+ // Serial.begin(9600);
   delay(3000);
   digitalWrite(led, LOW); 
+}
+
+
+void loop() {
   attachInterrupt(digitalPinToInterrupt(interrupt_pin),detection,RISING);
-}
-
-
-/*
-void loop() {
-  digitalWrite(led, LOW);
-  lum = analogRead(photoresistor);
-//  Serial.print("Brightness: ");
-//  Serial.println(lum);
-  movement = digitalRead(pir);
-  if (lum < treshold && movement == 1){
-    Serial.println("Gotcha!");
-    digitalWrite(led, HIGH);
-    digitalWrite(play, HIGH);
-    delay(150);
-    digitalWrite(play,LOW);
-    for(int i=0; i<90; i++){
-      int brightness = random(81);
-      if (brightness > 79){
-        digitalWrite(led, HIGH);
-        delay(40);
-      } else if (brightness < 20){
-        digitalWrite(led,0);
-        Serial.println("LOW");
-        delay(40);
-      } else {
-        analogWrite(led, brightness);
-        Serial.println(brightness);
-        delay(40);
-      }
-    }
-  digitalWrite(led, LOW);
-  delay(5000);
-  }
-}
-*/
-
-
-void loop() {
-  
+  LowPower.powerDown(SLEEP_FOREVER,ADC_OFF,BOD_OFF); // sleep until interrupt
+  detachInterrupt(digitalPinToInterrupt(interrupt_pin)); // remove interrupt
+  // the usual wake routine that turns on the LED
   if (state == HIGH){
-    
     lum = analogRead(photoresistor);
-    Serial.print("Lum: ");
-    Serial.println(lum);
+ //   Serial.print("Lum: ");
+ //   Serial.println(lum);
     if (lum < treshold){
       flicker();
       }
     digitalWrite(led, LOW);
-    }
-    
-  
-  state = LOW;
+    state = LOW;
+  }
 }
 
 
@@ -84,11 +50,11 @@ void flicker(){
       delay(40);
     } else if (brightness < 20){
       digitalWrite(led,0);
-      Serial.println("LOW");
+ //     Serial.println("LOW");
       delay(40);
     } else {
       analogWrite(led, brightness);
-      Serial.println(brightness);
+ //     Serial.println(brightness);
       delay(40);
     }
     
@@ -97,6 +63,6 @@ void flicker(){
 }
 
 void detection(){
-  Serial.println("Gotcha!");
+ // Serial.println("Gotcha!");
   state = HIGH; 
 }

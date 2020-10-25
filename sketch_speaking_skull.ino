@@ -1,3 +1,5 @@
+#include <LowPower.h>
+
 const int led = 6;
 volatile int state = LOW;
 const int pir = 2;
@@ -6,7 +8,7 @@ const int photoresistor = A0;
 const int play = 12;
 int lum = 1024;
 int brightness = 81;
-int treshold = 160;    // Level of light below which the eyes will trigger: 20 is a good default
+int treshold = 100;    // Level of light below which the eyes will trigger: 20 is a good default
 
 
 void setup() {
@@ -15,18 +17,18 @@ void setup() {
   digitalWrite(led, HIGH);
   pinMode(pir, INPUT);
   delay(3000);
-  Serial.begin(9600);
+  digitalWrite(led, LOW);
+//  Serial.begin(9600);
   pinMode(play, OUTPUT);
 }
 
 void loop() {
-  digitalWrite(led, LOW);
   lum = analogRead(photoresistor);
 //  Serial.print("Brightness: ");
 //  Serial.println(lum);
   movement = digitalRead(pir);
   if (lum < treshold && movement == 1){
-    Serial.println("Gotcha!");
+//    Serial.println("Gotcha!");
     digitalWrite(led, HIGH);
     digitalWrite(play, HIGH);
     delay(150);
@@ -38,15 +40,15 @@ void loop() {
         delay(40);
       } else if (brightness < 20){
         digitalWrite(led,0);
-        Serial.println("LOW");
+//        Serial.println("LOW");
         delay(40);
       } else {
         analogWrite(led, brightness);
-        Serial.println(brightness);
+//        Serial.println(brightness);
         delay(40);
       }
     }
   digitalWrite(led, LOW);
-  delay(5000);
+  LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF); 
   }
 }

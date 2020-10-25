@@ -8,13 +8,13 @@ const int led = 6;
 const int play = 12;
 int lum = 1;
 int brightness = 81;
-int treshold = 240;    // Level of light below which the eyes will trigger: 20 is a good default
+int treshold = 220;    // Level of light below which the eyes will trigger: 20 is a good default
 int dur = 2;  // Duration of flicker
 
 void setup() {
   pinMode(led, OUTPUT);
   pinMode(play, OUTPUT);
-  digitalWrite(led, HIGH);
+  digitalWrite(interrupt_pin, HIGH);
   Serial.begin(9600);
   attachInterrupt(digitalPinToInterrupt(interrupt_pin),detection,RISING);
   delay(3000);
@@ -76,7 +76,6 @@ void loop() {
 
 void flicker(){
   digitalWrite(play,HIGH);
-  digitalWrite(play,LOW);
   for(int i=0; i<90; i++){
     int brightness = random(81);
     if (brightness > 79){
@@ -91,9 +90,12 @@ void flicker(){
       Serial.println(brightness);
       delay(40);
     }
+    
   }
+  digitalWrite(play,LOW);
 }
 
 void detection(){
-  state = HIGH;
+  flicker();
+
 }
